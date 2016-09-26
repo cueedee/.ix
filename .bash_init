@@ -4,6 +4,24 @@
 ##
 
 
+##  Assess whether this is a login shell
+##
+##  @method     is_login
+##
+##  @return     {status}    0 if this shell is a login shell.
+
+alias is_login='shopt -q login_shell'
+
+
+##  Assess whether this is an interactive shell
+##
+##  @method     is_login
+##
+##  @return     {status}    0 if this shell is an interactive shell.
+
+alias is_interactive='[[ "${-}" =~ i ]]'
+
+
 ##  Output the resolved canonical absolute path to a given path.
 ##
 ##  This is either the real command, or one of number of possible
@@ -20,7 +38,7 @@
 ##
 ##  @param      path        The path to resolve.
 ##
-##  @return                 The resolved canonical absolute path to the
+##  @return     {stdout}    The resolved canonical absolute path to the
 ##                          given `${path}`.
 ##
 hash realpath 2>/dev/null               \
@@ -40,20 +58,20 @@ hash realpath 2>/dev/null               \
 ##
 ##  @method     self_dir
 ##
-##  @return                 The canonical absolute path to the
+##  @return     {stdout}    The canonical absolute path to the
 ##                          containing directory of the currently
 ##                          executing script.
 ##
 function self_dir
-(
+{
     ##  `${BASH_SOURCE}` contains the path to this script's file as it
     ##  was invoked.
     ##
-    ##  It could be a relative path; it could be a path to a symbolic
-    ##  link.
+    ##  It could be a relative path; elements of the path could be
+    ##  symbolic links; it could be a symbolic link itself.
     ##
     dirname -- "$( realpath -- "${BASH_SOURCE[0]}" )"
-)
+}
 
 
 ##  Execute `source "${path}"` for each argument.
@@ -71,13 +89,14 @@ function source_all
     done
 }
 
+
 ##  Declare the directory where this file resides.
 ##
 ##  @property   $IX_HOME
 ##
-export IX_HOME="$( self_dir )"
+IX_HOME="$( self_dir )"
 
 
 ##  Kick-start everything else.
 ##
-source_all $( shopt -s nullglob; echo "${IX_HOME}/.bash_profile_"* )
+source_all $( shopt -s nullglob; printf '%s ' "${IX_HOME}/.bash_init_"* )
