@@ -1,0 +1,173 @@
+##
+##  Please ensure that any changes this file makes to the environment
+##  are done idempotently.
+##
+
+
+##  Frequently needed git shortcuts
+##
+alias   ga='git add'
+alias   gb='git branch'
+alias   gc='git config'
+alias   gh='git help'
+alias   gs='git status'
+
+
+##
+##  See: https://git-scm.com/docs/git-diff
+##
+##  >   * `--cached`
+##  >   * `--staged`
+##  >
+##  >     This form is to view the changes you staged for the next
+##  >     commit relative to the named _`<commit>`_. Typically you
+##  >     would want comparison with the latest commit, so if you do
+##  >     not give _`<commit>`_, it defaults to `HEAD`. If `HEAD` does
+##  >     not exist (e.g. unborn branches) and _`<commit>`_ is not
+##  >     given, it shows all staged changes.
+##  >
+##  >   * `--word-diff[=`_`<mode>`_`]`
+##  >
+##  >     Show a word diff, using the _`<mode>`_ to delimit changed
+##  >     words.  By default, words are delimited by whitespace; see
+##  >     `--word-diff-regex` below.  The _`<mode>`_ defaults to plain,
+##  >     and must be one of:
+##  >
+##  >       * `color`
+##  >
+##  >         Highlight changed words using only colors.  Implies
+##  >         `--color`.
+##  >
+##  >       * `plain`
+##  >         Show words as `[-`_`removed`_`-]` and `{+`_`added`_`+}`.
+##  >         Makes no attempts to escape the delimiters if they appear
+##  >         in the input, so the output may be ambiguous.
+##  >
+##  >       * `porcelain`
+##  >
+##  >         Use a special line-based format intended for script
+##  >         consumption.  Added/removed/unchanged runs are printed in
+##  >         the usual unified diff format, starting with a
+##  >         `+`/`-`/` ` character at the beginning of the line and
+##  >         extending to the end of the line.  Newlines in the input
+##  >         are represented by a tilde `~` on a line of its own.
+##  >
+##  >       * `none`
+##  >
+##  >         Disable word diff again.
+##  >
+##  >     Note that despite the name of the first mode, color is used
+##  >     to highlight the changed parts in all modes if enabled.
+##  >
+##  >   * `-M[`_`<n>`_`]`
+##  >   * `--find-renames[=`_`<n>`_`]`
+##  >
+##  >     Detect renames.  If _`<n>`_ is specified, it is a threshold
+##  >     on the similarity index (i.e. amount of addition/deletions
+##  >     compared to the file’s size).  For example, `-M90%` means
+##  >     Git should consider a delete/add pair to be a rename if more
+##  >     than 90% of the file hasn’t changed.  Without a `%` sign,
+##  >     the number is to be read as a fraction, with a decimal point
+##  >     before it.  I.e., `-M5` becomes `0.5`, and is thus the same
+##  >     as `-M50%`.  Similarly, `-M05` is the same as `-M5%`.  To
+##  >     limit detection to exact renames, use `-M100%`.  The default
+##  >     similarity index is `50%`.
+##  >
+##  >   * `-w`
+##  >   * `--ignore-all-space`
+##  >
+##  >     Ignore whitespace when comparing lines.  This ignores
+##  >     differences even if one line has whitespace where the other
+##  >     line has none.
+##
+alias   gd='git diff -M'
+alias  gdw='gd --word-diff=color -w'
+alias  gsd='gd --staged'
+alias gsdw='gdw --staged'
+
+
+##
+##  See: https://git-scm.com/docs/git-log
+##
+##  >   * `--follow`
+##  >
+##  >     Continue listing the history of a file beyond renames (works
+##  >     only for a single file).
+##  >
+##  >   * `--no-decorate`
+##  >   * `--decorate[=short|full|auto|no]`
+##  >
+##  >     Print out the ref names of any commits that are shown.  If
+##  >     `short` is specified, the ref name prefixes `refs/heads/`,
+##  >     `refs/tags/` and `refs/remotes/` will not be printed.  If
+##  >      `full` is specified, the full ref name (including prefix)
+##  >      will be printed.  If `auto` is specified, then if the output
+##  >      is going to a terminal, the ref names are shown as if
+##  >      `short` were given, otherwise no ref names are shown.  The
+##  >      default option is `short`.
+##  >
+##  >   * `--abbrev-commit`
+##  >
+##  >     Instead of showing the full 40-byte hexadecimal commit object
+##  >     name, show only a partial prefix.  Non default number of
+##  >     digits can be specified with `--abbrev=`_`<n>`_ (which also
+##  >     modifies diff output, if it is displayed).
+##  >
+##  >     This should make "--pretty=oneline" a whole lot more readable
+##  >     for people using 80-column terminals.
+##  >
+##  >   * `--oneline`
+##  >
+##  >     This is a shorthand for `--pretty=oneline --abbrev-commit`
+##  >     used together.
+##  >
+##  >   * `--graph`
+##  >
+##  >     Draw a text-based graphical representation of the commit
+##  >     history on the left hand side of the output.  This may cause
+##  >     extra lines to be printed in between commits, in order for
+##  >     the graph history to be drawn properly.  Cannot be combined
+##  >     with `--no-walk`.
+##  >
+##  >     This enables parent rewriting, see History Simplification
+##  >     below.
+##  >
+##  >     This implies the `--topo-order` option by default, but the
+##  >     `--date-order` option may also be specified.
+##  >
+##  >   * `-p`
+##  >   * `-u`
+##  >   * `--patch`
+##  >
+##  >     Generate patch (see section on generating patches).
+##  >
+##  >   * `--name-status`
+##  >
+##  >     Show only names and status of changed files.  See the
+##  >     description of the `--diff-filter` option on what the status
+##  >     letters mean.
+##  >
+##  >   * `--word-diff[=`_`<mode>`_`]`
+##  >
+##  >     _See same option at `git-diff` above._
+##  >
+##  >   * `-M[`_`<n>`_`]`
+##  >   * `--find-renames[=`_`<n>`_`]`
+##  >
+##  >     If generating diffs, detect and report renames for each
+##  >     commit.  For following files across renames while traversing
+##  >     history, see --follow.
+##  >
+##  >     _See same option at `git-diff` above._
+##  >
+##  >   * `-w`
+##  >   * `--ignore-all-space`
+##  >
+##  >     _See same option at `git-diff` above._
+##
+alias   gl='git log --decorate --abbrev-commit --name-status -M'
+alias  gld='git log --decorate --abbrev-commit -p -M'
+alias gldw='gld --word-diff=color -w'
+alias  gll='git log --decorate --oneline'
+alias   gg='gl --graph'
+alias  ggl='gll --graph'
