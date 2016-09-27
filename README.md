@@ -1,5 +1,5 @@
 # .ix
-My distributable common *nix shell environment initialization config.
+My distributable, normalized and annotated \*nix shell environment initialization config.
 
 -----------------------------------------------------------------------
 
@@ -214,6 +214,6 @@ If however you think that's wasteful, you could arrange to avoid that yourself; 
   * **`~/.bashrc`** :
 
     ```bash
-    [[ ${__IX_DID_RUN:+1} == 1 ]] && source ~/.ix/.bash_init
+    [[ -z "${__IX_DID_RUN:+1}" ]] && source ~/.ix/.bash_init
     ```
 
