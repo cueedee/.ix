@@ -255,6 +255,7 @@ PS1=\
 "$(ps_esc "${term_style_fg_blk_hi}" )"\
 '\t '\
 "$(ps_esc "${term_style_fg_grn}" )"\
+"${debian_chroot:+($debian_chroot)}"\
 '\u@\h '\
 "$(ps_esc "${term_style_fg_ylw}" )"\
 '\w'\
