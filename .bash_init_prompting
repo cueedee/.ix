@@ -109,7 +109,8 @@ term_style_soe="$( tput rmso )"
 term_style_ule="$( tput rmul )"
 
 
-##  Set foreground color to black, red, green, blue, magenta, cyan or white.
+##  Set foreground color to black, red, green, blue, magenta, cyan or
+##  white.
 ##
 ##  @property   $term_style_fg_blk
 ##  @property   $term_style_fg_red
@@ -121,7 +122,8 @@ term_style_ule="$( tput rmul )"
 ##  @property   $term_style_fg_wht
 ##
 
-##  Set foreground color to light/bright black, red, green, blue, magenta, cyan or white.
+##  Set foreground color to light/bright black, red, green, blue,
+##  magenta, cyan or white.
 ##
 ##  @property   $term_style_fg_blk_hi
 ##  @property   $term_style_fg_red_hi
@@ -133,7 +135,8 @@ term_style_ule="$( tput rmul )"
 ##  @property   $term_style_fg_wht_hi
 ##
 
-##  Set background color to black, red, green, blue, magenta, cyan or white.
+##  Set background color to black, red, green, blue, magenta, cyan or
+##  white.
 ##
 ##  @property   $term_style_bg_blk
 ##  @property   $term_style_bg_red
@@ -145,7 +148,8 @@ term_style_ule="$( tput rmul )"
 ##  @property   $term_style_bg_wht
 ##
 
-##  Set background color to light/bright black, red, green, blue, magenta, cyan or white.
+##  Set background color to light/bright black, red, green, blue,
+##  magenta, cyan or white.
 ##
 ##  @property   $term_style_bg_blk_hi
 ##  @property   $term_style_bg_red_hi
@@ -159,7 +163,7 @@ term_style_ule="$( tput rmul )"
 
 colors=(                                                    \
     blk    red    grn    ylw    blu    mga    cyn    wht    \
-    blk_hi red_hi grn_hi ylw_hi hlu_hi mga_hi cyn_hi wht_hi \
+    blk_hi red_hi grn_hi ylw_hi blu_hi mga_hi cyn_hi wht_hi \
 )
 
 for index in ${!colors[@]} ; do
