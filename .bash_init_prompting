@@ -305,15 +305,29 @@ function ps_esc
 ##  > command substitution, arithmetic expansion, and quote removal,
 ##  > subject to the value of the `promptvars` shell option.
 ##
-PS1=\
+PS1_PRE=\
 "$(ps_esc "$(term_status_line '\w')" )"\
 '\n'\
 "$(ps_esc "${term_style_fg_blk_hi}" )"\
-'\t '\
-"$(ps_esc "${term_style_fg_grn}" )"\
+'\t'\
+' '\
+"$(ps_esc "${term_style_fg_cyn}" )"\
 "${debian_chroot:+($debian_chroot)}"\
-'\u@\h '\
+'\u@\h'
+
+PS1_POST=\
+' '\
 "$(ps_esc "${term_style_fg_ylw}" )"\
 '\w'\
 "$(ps_esc "${term_style_rst}" )"\
 '\n\$ '
+
+PS1="${PS1_PRE}${PS1_POST}"
+
+##  If `__git_ps1` is available inject it into `${PROMPT_COMMAND}` for
+##  a colorized git status summary according to `.bash_init_git`
+##  definition.
+##
+if type -p __git_ps1 >&-; then
+  PROMPT_COMMAND="$(command_inject "${PROMPT_COMMAND}" '__git_ps1 "${PS1_PRE}$(ps_esc "${term_style_rst}")" "${PS1_POST}"' )"
+fi
