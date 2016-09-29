@@ -217,3 +217,8 @@ If however you think that's wasteful, you could arrange to avoid that yourself; 
     [[ -z "${__IX_DID_RUN:+1}" ]] && source ~/.ix/.bash_init
     ```
 
+-----------------------------------------------------------------------
+
+## Further reading
+
+  * `rbenv`'s comprehensive [unix shell initialization](https://github.com/rbenv/rbenv/wiki/Unix-shell-initialization) guide.
