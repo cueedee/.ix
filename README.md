@@ -1,5 +1,5 @@
 # .ix
-My distributable, normalized and annotated \*nix shell environment initialization config.
+My distributable, normalized and annotated \*nix shell environment initialization config - i.e., my "dotfiles".
 
 -----------------------------------------------------------------------
 
