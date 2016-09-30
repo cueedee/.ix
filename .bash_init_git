@@ -190,7 +190,7 @@ if type -p __git_ps1 >&- ; then :; else
     ##    * `/usr/local/etc/bash_completion.d/git-prompt*`
     ##
     for __git_prompt in {~/.git,/usr/lib/git-core/git-sh,/{,usr/local/}etc/bash_completion.d/git}-prompt*; do
-        if [[ -r "${__git_prompt}" && "$(head -1 -- "${__git_prompt}")" == '# bash/zsh git prompt support' ]] ; then
+        if [[ -r "${__git_prompt}" && "$( file -bM "${IX_HOME}/.magic" -- "${__git_prompt}" )" == 'git-prompt' ]] ; then
             source -- "${__git_prompt}"
             break
         fi
