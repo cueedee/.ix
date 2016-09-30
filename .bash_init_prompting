@@ -299,11 +299,11 @@ function ps_esc
 ##  > The command number and the history number are usually different:
 ##  > the history number of a command is its position in the history
 ##  > list, which may include commands restored from the history file
-##  > _[...]_, while the command number is the position in the sequence
-##  > of commands executed during the current shell session.  After the
-##  > string is decoded, it is expanded via parameter expansion,
-##  > command substitution, arithmetic expansion, and quote removal,
-##  > subject to the value of the `promptvars` shell option.
+##  > _\[...\]_, while the command number is the position in the
+##  > sequence of commands executed during the current shell session.
+##  > After the string is decoded, it is expanded via parameter
+##  > expansion, command substitution, arithmetic expansion, and quote
+##  > removal, subject to the value of the `promptvars` shell option.
 ##
 PS1_PRE=\
 "$(ps_esc "$(term_status_line '\w')" )"\
