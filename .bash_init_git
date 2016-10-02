@@ -4,6 +4,11 @@
 ##
 
 
+##  Only when this is an interactive shell.
+##
+is_interactive || return
+
+
 ##  Frequently needed git shortcuts
 ##
 alias   ga='git add'
@@ -209,6 +214,7 @@ if type -p __git_ps1 >&- ; then
     ##
     export GIT_PS1_SHOWDIRTYSTATE='1'
 
+
     ##  > If something is stashed, then a `$` will be shown next to the
     ##  > branch name.
     ##
@@ -216,6 +222,7 @@ if type -p __git_ps1 >&- ; then
     ##  @default    1
     ##
     export GIT_PS1_SHOWSTASHSTATE='1'
+
 
     ##  > If there're untracked files, then a `%` will be shown next to
     ##  > the branch name.  You can configure this per-repository with
@@ -226,6 +233,7 @@ if type -p __git_ps1 >&- ; then
     ##  @default    1
     ##
     export GIT_PS1_SHOWUNTRACKEDFILES='1'
+
 
     ##  > If you would like to see the difference between HEAD and its
     ##  > upstream, set `GIT_PS1_SHOWUPSTREAM='auto'`.
@@ -256,6 +264,7 @@ if type -p __git_ps1 >&- ; then
     ##
     export GIT_PS1_SHOWUPSTREAM='verbose'
 
+
     ##  > If you would like to see more information about the identity
     ##  > of commits checked out as a detached `HEAD`, set
     ##  > `GIT_PS1_DESCRIBE_STYLE` to one of these values:
@@ -272,6 +281,7 @@ if type -p __git_ps1 >&- ; then
     ##
     export GIT_PS1_DESCRIBE_STYLE='branch'
 
+
     ##  > If you would like a colored hint about the current dirty
     ##  > state, set `GIT_PS1_SHOWCOLORHINTS` to a nonempty value.
     ##  >
@@ -283,6 +293,7 @@ if type -p __git_ps1 >&- ; then
     ##  @default    1
     ##
     export GIT_PS1_SHOWCOLORHINTS='1'
+
 
     ##  > If you would like `__git_ps1` to do nothing in the case when
     ##  > the current directory is set up to be ignored by git, then

@@ -4,6 +4,11 @@
 ##
 
 
+##  Only when this is an interactive shell.
+##
+is_interactive || return
+
+
 ##  Declare the default pager utility to use.
 ##
 ##  @property   env.$PAGER
