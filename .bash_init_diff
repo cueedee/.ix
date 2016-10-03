@@ -1,0 +1,85 @@
+##
+##  Please ensure that any changes this file makes to the environment
+##  are done idempotently.
+##
+
+##
+##  Recursive command line side-to-side diff and helpers.
+##
+
+##  Only when this is an interactive shell.
+##
+is_interactive || return
+
+
+##  Output the terminal's current column width.
+##
+##  @method     term_width
+##
+##  @return     {stdout}
+##
+alias term_width='tput cols'
+
+
+##  Output a side-to-side recursive diff.
+##
+##  @method     diffr
+##
+##  @param      ...arg      arguments to pass on to `diff`
+##
+##  @return     {stdout}    pipe to `dless`
+##
+function diffr ()
+{
+   # echo 'diff --strip-trailing-cr -wytrsd '\''--tabsize=8'\'' -W 238' "${@}"
+   echo "${@}"
+
+   # -w : --ignore-all-space
+   # -y : --side-by-side
+   # -t : --expand-tabs
+   # -s : --report-identical-files ## with -y, identical files are still shown, though not reported as such
+   # -d : --minimal
+
+   #\diff --strip-trailing-cr -wytrsd --tabsize=8 -W `term_width` "$@" \
+   #\diff --strip-trailing-cr -wytrsd -W `term_width` -x .svn -x .DS_Store -x .git -x node_modules -x .sass-cache -x dist "$@" \
+   \diff --strip-trailing-cr -ytrsd -W `term_width` -x .svn -x .DS_Store -x .git -x node_modules -x .sass-cache -x dist "$@" \
+   |    perl -e '
+        undef$/;
+        $_=<>; ##  Slurp
+
+        ##  Fix diff output bug where report lines are sometimes not on a new line.
+
+        s/(?<!\n)(?=diff --strip-trailing-cr -wytrsd -W )/$1\n/g;
+
+        ##  Remove side-to-side reports of identical (text) files,
+        ##  Remove reports of identical (binary) files.
+
+        s/^diff .*? ([^ ]*) ([^ ]*)\n(?:(?!^(?:diff|Only|Files) )[\s\S])*+(^Files \1 and \2 are identical\n)//mg;
+        s/^Files .* are identical\n//mg;
+
+        ##  Alternatively, leave those report-lines in (but still discards side-to-side), and color-code
+        ##
+        ## s/^diff .*? -W \d++ (.*) (.*+)\n(?:(?!^(?:diff|Only|Files) )[\s\S])*+(?=^Files \1 and \2 are identical\n)//mg;
+        ## s/^(Files .* are identical)$/[33m$1[m/mg;    ##  Color-code "Files ... are identical" lines to ....
+
+        s/^(Files .* differ)$/[35m$1[m/mg;          ##  Color-code "Files ... differ" lines to magenta.
+        s/^(diff .*)$/\n[35m$1[m/mg;                ##  Color-code "diff ..." lines to magenta prepend an empty line.
+        s/^(Only .*)$/[34m$1[m/mg;                  ##  Color-code "Only in ..." lines to blue.
+        s/^[ \t]+\K([>](?:[ \t].*)?)$/[31m$1[m/mg;  ##  Color-code delete lines to red.
+        s/^(.*[ \t][<][ \t]*)$/[32m$1[m/mg;         ##  Color-code inserted lines to green.
+        s/^(.*[ \t][|]([ \t].*)?)$/[36m$1[m/mg;     ##  Color-code changed lines to cyan.
+        print;
+    '
+}
+
+
+##  Pagination with an apt asearch pattern for `diffr` output.
+##
+##  @method     dless
+##
+##  @return     {stdout}    pipe to `dless`
+##
+function dless ()
+{
+    less -j4 -Rp '^.* [|]( .*)?$|^.* [<]$|^ +[>]( .*)?$|^Only in .*|^Files .*' "$@"
+}
