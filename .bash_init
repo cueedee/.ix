@@ -64,8 +64,16 @@ hash realpath 2>/dev/null               \
 ##
 function self_dir
 {
-    ##  `${BASH_SOURCE}` contains the path to this script's file as it
-    ##  was invoked.
+    ##  `${BASH_SOURCE[0]}` contains the path to this script's file as
+    ##  it was invoked.
+    ##
+    ##  See: https://www.gnu.org/software/bash/manual/bashref.html#index-BASH_005fSOURCE
+    ##
+    ##  > An array variable whose members are the source filenames
+    ##  > where the corresponding shell function names in the
+    ##  > `FUNCNAME` array variable are defined. The shell function
+    ##  > `${FUNCNAME[$i]}` is defined in the file `${BASH_SOURCE[$i]}`
+    ##  > and called from `${BASH_SOURCE[$i+1]}`.
     ##
     ##  It could be a relative path; elements of the path could be
     ##  symbolic links; it could be a symbolic link itself.
