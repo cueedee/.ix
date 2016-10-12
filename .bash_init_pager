@@ -41,6 +41,14 @@ export PAGER='less'
 ##  >   `ESC` and the `m` by setting the environment variable
 ##  >   `LESSANSIMIDCHARS` to the list of characters which can appear.
 ##  >
+##  > * `-i` or `--ignore-case`
+##  >
+##  >   Causes searches to ignore case; that is, uppercase and
+##  >   lowercase are considered identical.  This option is ignored if
+##  >   any uppercase letters appear in the search pattern; in other
+##  >   words, if a pattern contains uppercase letters, then that
+##  >   search does not ignore case.
+##  >
 ##  > * `-jn` or `--jump-target=n`
 ##  >
 ##  >   Specifies a line on the screen where the "target" line is to be
@@ -65,6 +73,6 @@ export PAGER='less'
 ##  >   searches begin at the fifth line on the screen.
 ##
 ##  @property   env.$LESS
-##  @default    '-Rj5'
+##  @default    '-Rij5'
 ##
-export LESS='-Rj5'
+export LESS='-Rij5'
