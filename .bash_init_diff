@@ -4,7 +4,7 @@
 ##
 
 ##
-##  Recursive command line side-to-side diff and helpers.
+##  Recursive command line side-by-side diff and helpers.
 ##
 
 ##  Only when this is an interactive shell.
@@ -21,59 +21,286 @@ is_interactive || return
 alias term_width='tput cols'
 
 
-##  Output a side-to-side recursive diff.
+##  Output a recursive side-by-side colorized diff.
+##
+##  Note that the `diff` command will unhesitatingly accept option
+##  parameters presented after its path arguments; this tool however
+##  will just get confused.
 ##
 ##  @method     diffr
 ##
-##  @param      ...arg      arguments to pass on to `diff`
+##  @param      ...option   options to pass on to `diff`
 ##
-##  @return     {stdout}    pipe to `dless`
+##  @param      path1       first path argument to pass on to `diff`
+##  @param      path2       second path argument to pass on to `diff`
+##
+##                          `path1` and `path2` are either two files or
+##                          two directories.
+##
+##  @return     {stdout}    pipe this to `dless`
 ##
 function diffr ()
 {
-   # echo 'diff --strip-trailing-cr -wytrsd '\''--tabsize=8'\'' -W 238' "${@}"
-   echo "${@}"
+    if [[ "${#}" -lt 2 || -z "${@: -2:1}" || -z "${@: -1:1}" ]] ; then
 
-   # -w : --ignore-all-space
-   # -y : --side-by-side
-   # -t : --expand-tabs
-   # -s : --report-identical-files ## with -y, identical files are still shown, though not reported as such
-   # -d : --minimal
+        echo "Need at least two non-empty arguments" >&2
+        return 1
+    fi
 
-   #\diff --strip-trailing-cr -wytrsd --tabsize=8 -W `term_width` "$@" \
-   #\diff --strip-trailing-cr -wytrsd -W `term_width` -x .svn -x .DS_Store -x .git -x node_modules -x .sass-cache -x dist "$@" \
-   \diff --strip-trailing-cr -ytrsd -W `term_width` -x .svn -x .DS_Store -x .git -x node_modules -x .sass-cache -x dist "$@" \
-   |    perl -e '
-        undef$/;
-        $_=<>; ##  Slurp
 
-        ##  Fix diff output bug where report lines are sometimes not on a new line.
+    ##  See: https://www.gnu.org/software/diffutils/manual/diffutils.html#diff-Options
+    ##
+    ##      Note however that your system's version may vary.
+    ##
+    ##  >   * `-d` / `--minimal`
+    ##  >
+    ##  >     Try hard to find a smaller set of changes.
+    ##  >
+    ##  >   * `-r` / `--recursive`
+    ##  >
+    ##  >    Recursively compare any subdirectories found.
+    ##  >
+    ##  >   * `-s` / `--report-identical-files`
+    ##  >
+    ##  >     Report when two files are the same.
+    ##  >     With `-y`, identical files are still shown, though not
+    ##  >     reported as such.
+    ##  >
+    ##  >   * `--strip-trailing-cr`
+    ##  >
+    ##  >     Strip trailing carriage return on input.
+    ##  >
+    ##  >   * `-t` : --expand-tabs
+    ##  >
+    ##  >     Expand tabs to spaces in output.
+    ##  >     Tabs mess up side-by-side diffs. Just pray that tabs were
+    ##  >     used for the default 8 stops.
+    ##  >
+    ##  >   * `-w` : --ignore-all-space
+    ##  >
+    ##  >     Ignore all white space.
+    ##  >
+    ##  >   * `-W `_`<NUM>`_ / `--width=`_`<NUM>`_
+    ##  >
+    ##  >     Output at most `<NUM>` (default 130) print columns.
+    ##  >
+    ##  >   * `-x`_`<PAT>` / `--exclude=`_`<PAT>`_
+    ##  >
+    ##  >     Exclude files that match `<PAT>`.
+    ##  >
+    ##  >   * `-y` : --side-by-side
+    ##  >
+    ##  >     Output in two columns.
+    ##
+    local opts=(            \
+        --strip-trailing-cr \
+        -drstwy             \
+        -W "$(term_width)"  \
+                            \
+        -x .DS_store        \
+        -x .git             \
+        -x .sass-cache      \
+        -x .svn             \
+        -x dist             \
+        -x node_modules     \
+    )
 
-        s/(?<!\n)(?=diff --strip-trailing-cr -wytrsd -W )/$1\n/g;
+    ##  Pass identical arguments to both `diff` and `perl` so the perl
+    ##  script will know how `diff` was invoked.
+    ##
+    \diff "${opts[@]}" "${@}" | perl -e '
 
-        ##  Remove side-to-side reports of identical (text) files,
-        ##  Remove reports of identical (binary) files.
+        use strict;
+        use warnings;
 
-        s/^diff .*? ([^ ]*) ([^ ]*)\n(?:(?!^(?:diff|Only|Files) )[\s\S])*+(^Files \1 and \2 are identical\n)//mg;
-        s/^Files .* are identical\n//mg;
+        use Term::ANSIColor;
 
-        ##  Alternatively, leave those report-lines in (but still discards side-to-side), and color-code
+        undef $/; $_ = <STDIN>;   ##  **_burp_**
+
+        ##  The options to the `diff` command as a regex.
         ##
-        ## s/^diff .*? -W \d++ (.*) (.*+)\n(?:(?!^(?:diff|Only|Files) )[\s\S])*+(?=^Files \1 and \2 are identical\n)//mg;
-        ## s/^(Files .* are identical)$/[33m$1[m/mg;    ##  Color-code "Files ... are identical" lines to ....
+        my $opts    = "@ARGV[0..$#ARGV-2]";
+        my $opts_re = qr{ \Q$opts\E }x;
 
-        s/^(Files .* differ)$/[35m$1[m/mg;          ##  Color-code "Files ... differ" lines to magenta.
-        s/^(diff .*)$/\n[35m$1[m/mg;                ##  Color-code "diff ..." lines to magenta prepend an empty line.
-        s/^(Only .*)$/[34m$1[m/mg;                  ##  Color-code "Only in ..." lines to blue.
-        s/^[ \t]+\K([>](?:[ \t].*)?)$/[31m$1[m/mg;  ##  Color-code delete lines to red.
-        s/^(.*[ \t][<][ \t]*)$/[32m$1[m/mg;         ##  Color-code inserted lines to green.
-        s/^(.*[ \t][|]([ \t].*)?)$/[36m$1[m/mg;     ##  Color-code changed lines to cyan.
-        print;
-    '
+        ##  The path arguments to the `diff` command as regexes.
+        ##
+        my $src     = $ARGV[-2];
+        my $src_re  = qr{ \Q$src\E }xo;
+
+        my $dst     = $ARGV[-1];
+        my $dst_re  = qr{ \Q$dst\E }xo;
+
+        ##  Derive width of one column; (term-width - gutter) div 2.
+        ##
+        my $column  = ( ( grep( /-W/...//, @ARGV ))[1] - 3 ) >> 1;
+
+        ##  Styling sequences;
+        ##
+        my $red     = color( "reset red" );
+        my $grn     = color( "reset green" );
+        my $blu     = color( "reset blue" );
+        my $mga     = color( "reset magenta" );
+        my $cyn     = color( "reset cyan" );
+        my $rst     = color( "reset" );
+
+        my $sto     = color( "bold on_bright_yellow" );
+
+        sub highlight
+        {
+            my ( $path, $diff ) = (@_);
+
+            ##  Reconstruct and print colorized report line, prepending
+            ##  a heading new line.
+            ##
+            print(
+                "\n"
+            ,   $mga,  "diff "
+            ,   $red,  $src, $sto, $path
+            ,   $mga,  " "
+            ,   $grn,  $dst, $sto, $path
+            ,   $rst
+            ,   "\n"
+            );
+
+            ##  Colorize differences.
+            ##
+            for ( $diff )
+            {
+                s{ ^ [ ]{$column} [ ] \K ( [>)] (?: [ ] .* )? ) $ }{${grn}${1}${rst}}xomg;
+                s{ ^ ( .{$column} [ ]      [(<] )               $ }{${red}${1}${rst}}xomg;
+                s{ ^ ( .{$column} [ ]    [/|\\] (?: [ ] .* )? ) $ }{${cyn}${1}${rst}}xomg;
+
+                ##  Ensure the last line has a newline terminator, and
+                ##  append a trailing new line.
+                ##
+                print( $_, ( m/\n\z/ ? "\n" : "\n\n" ) );
+            }
+
+            return;
+        }
+
+        ##  Because of files without a trailing newline at their EOF,
+        ##  the report lines that `diff` outputs may not always start
+        ##  at a new line; so the r.e. below does not require this.
+        ##
+        my $matcher   =
+            qr{
+                (?|
+                    (d)iff
+                    \ ${opts_re}
+                    \ ${src_re} ( .*? )
+                    \ ${dst_re} \g{-1}
+                    \n
+                |
+                    (O)nly\ in
+                    \ ${src_re} ( .*? ) :
+                    \ ( [^/\n]+ )
+                    \n
+                |
+                    Onl(y)\ in
+                    \ ${dst_re} ( .*? ) :
+                    \ ( [^/\n]+ )
+                    \n
+                |
+                    (B)inary\ files
+                    \ ${src_re} ( .*? )
+                    \ and
+                    \ ${dst_re} \g{-1}
+                    \ differ
+                    \n
+                |
+                    (F)iles
+                    \ ${src_re} ( .*? )
+                    \ and
+                    \ ${dst_re} \g{-1}
+                    \ are\ identical
+                    \n
+                )
+            }xom
+        ;
+
+        my ( $type, $path, $file, $till ) = ( "d", "", "", 0 );
+
+        LOOP: while ( /${matcher}/og )
+        {
+            ( $type, $path, $file, $till ) = ( $1, $2, $3, $+[0] );
+
+            REDO: {
+
+                if ( "d" eq $type )
+                {
+                    ##  This is either a true report of diffs or really
+                    ##  an indentical files report.  Look for the next
+                    ##  match to find out.
+
+                    if ( /${matcher}/og )
+                    {
+                        ##  Skip if an indentical files report.
+                        ##
+                        next LOOP if ( "F" eq $1 && $path eq $2 );
+
+                        highlight( $path, substr( $_, $till, $-[0] - $till ));
+
+                        ##  Continue to process the line looked ahead
+                        ##  for.
+                        ##
+                        ( $type, $path, $file, $till ) = ( $1, $2, $3, $+[0] );
+
+                        redo REDO;
+                    }
+
+                    last LOOP;
+                }
+                elsif ( "B" eq $type )
+                {
+                    ##  Reconstruct and print colorized report line
+                    ##
+                    print(
+                        $mga,  "Binary files "
+                    ,   $red,  $src, $sto, $path
+                    ,   $mga,  " and "
+                    ,   $grn,  $dst, $sto, $path
+                    ,   $mga,  " differ"
+                    ,   $rst
+                    ,   "\n"
+                    );
+                }
+                elsif ( "O" eq $type )
+                {
+                    ##  Reconstruct and print colorized report line
+                    ##
+                    print(
+                        $blu,  "Only in "
+                    ,   $red,  $src, ": ", $sto, ( $path ? ( $path, "/" ) : () ), $file
+                    ,   $rst
+                    ,   "\n"
+                    );
+                }
+                elsif ( "y" eq $type )
+                {
+                    ##  Reconstruct and print colorized report line
+                    ##
+                    print(
+                        $blu,  "Only in "
+                    ,   $grn,  $dst, ": ", $sto, ( $path ? ( $path, "/" ) : () ), $file
+                    ,   $rst
+                    ,   "\n"
+                    );
+                }
+            }
+        }
+
+        ##  This is either the last- _and_ a `diff` report line, _or_
+        ##  the `diff` command was on files instead of directories and
+        ##  so no report line was ever found.
+        ##
+        highlight( $path, substr( $_, $till )) if "d" eq $type;
+
+    ' -- "${opts[@]}" "${@}"
 }
 
 
-##  Pagination with an apt asearch pattern for `diffr` output.
+##  Pagination with an apt search pattern for `diffr` output.
 ##
 ##  @method     dless
 ##
@@ -81,5 +308,7 @@ function diffr ()
 ##
 function dless ()
 {
-    less -j4 -Rp '^.* [|]( .*)?$|^.* [<]$|^ +[>]( .*)?$|^Only in .*|^Files .*' "$@"
+    local column=$(( ( $(term_width) - 3 ) / 2 ))
+
+    less -j5 -Rp "^.{${column}} ([/|\\\\]( .*)?|[(<])\$|^ {${column}} [>)]( .*)?\$|^Only in .*|^Binary files .*" "$@"
 }
