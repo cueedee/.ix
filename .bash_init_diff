@@ -119,11 +119,6 @@ function diffr ()
 
         undef $/; $_ = <STDIN>;   ##  **_burp_**
 
-        ##  The options to the `diff` command as a regex.
-        ##
-        my $opts    = "@ARGV[0..$#ARGV-2]";
-        my $opts_re = qr{ \Q$opts\E }x;
-
         ##  The path arguments to the `diff` command as regexes.
         ##
         my $src     = $ARGV[-2];
@@ -188,7 +183,7 @@ function diffr ()
         my $m_diff =
             qr{
                 (d)iff
-                \ ${opts_re}
+                \ .*?
                 \ ${src_re} ( .*? )
                 \ ${dst_re} \g{-1}
                 \n
