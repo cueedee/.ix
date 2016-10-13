@@ -99,6 +99,8 @@ function diffr ()
                             \
         -x .DS_store        \
         -x .git             \
+        -x .m2              \
+        -x .npm             \
         -x .sass-cache      \
         -x .svn             \
         -x dist             \
