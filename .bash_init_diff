@@ -21,7 +21,21 @@ is_interactive || return
 alias term_width='tput cols'
 
 
-##  Output a recursive side-by-side colorized diff.
+##  Recursive side-by-side `diff -ry` output post-processed to
+##  highlight _only_ what changed.
+##
+##  Adjusts output to the available terminal width.
+##
+##  Ignores these patterns by default:
+##
+##    * `.DS_store`
+##    * `.git`
+##    * `.m2`
+##    * `.npm`
+##    * `.sass-cache`
+##    * `.svn`
+##    * `dist`
+##    * `node_modules`
 ##
 ##  Note that the `diff` command will unhesitatingly accept option
 ##  parameters presented after its path arguments; this tool however
@@ -318,7 +332,9 @@ function diffr ()
 ##
 ##  @method     dless
 ##
-##  @return     {stdout}    pipe to `dless`
+##  @param      ...option   options to pass on to `less`
+##
+##  @return     {stdout}
 ##
 function dless ()
 {
