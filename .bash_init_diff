@@ -185,45 +185,62 @@ function diffr ()
         ##  the report lines that `diff` outputs may not always start
         ##  at a new line; so the r.e. below does not require this.
         ##
-        my $matcher   =
+        my $m_diff =
             qr{
-                (?|
-                    (d)iff
-                    \ ${opts_re}
-                    \ ${src_re} ( .*? )
-                    \ ${dst_re} \g{-1}
-                    \n
-                |
-                    (O)nly\ in
-                    \ ${src_re} ( .*? ) :
-                    \ ( [^/\n]+ )
-                    \n
-                |
-                    Onl(y)\ in
-                    \ ${dst_re} ( .*? ) :
-                    \ ( [^/\n]+ )
-                    \n
-                |
-                    (B)inary\ files
-                    \ ${src_re} ( .*? )
-                    \ and
-                    \ ${dst_re} \g{-1}
-                    \ differ
-                    \n
-                |
-                    (F)iles
-                    \ ${src_re} ( .*? )
-                    \ and
-                    \ ${dst_re} \g{-1}
-                    \ are\ identical
-                    \n
-                )
-            }xom
+                (d)iff
+                \ ${opts_re}
+                \ ${src_re} ( .*? )
+                \ ${dst_re} \g{-1}
+                \n
+            }x
+        ;
+        my $m_src_only =
+            qr{
+                (O)nly\ in
+                \ ${src_re} ( .*? ) :
+                \ ( [^/\n]+ )
+                \n
+            }x
+        ;
+        my $m_dst_only =
+            qr{
+                Onl(y)\ in
+                \ ${dst_re} ( .*? ) :
+                \ ( [^/\n]+ )
+                \n
+            }x
+        ;
+        my $m_binary =
+            qr{
+                (B)inary\ files
+                \ ${src_re} ( .*? )
+                \ and
+                \ ${dst_re} \g{-1}
+                \ differ
+                \n
+            }x
+        ;
+        my $m_files =
+            qr{
+                (F)iles
+                \ ${src_re} ( .*? )
+                \ and
+                \ ${dst_re} \g{-1}
+                \ are\ identical
+                \n
+            }x
+        ;
+        my $matcher =
+            (
+                length( $src ) > length( $dst )
+            ?   qr{ (?| $m_src_only | $m_dst_only | $m_binary | $m_files | $m_diff ) }x
+            :   qr{ (?| $m_dst_only | $m_src_only | $m_binary | $m_files | $m_diff ) }x
+            )
         ;
 
         my ( $type, $path, $file, $till ) = ( "d", "", "", 0 );
 
-        LOOP: while ( /${matcher}/og )
+        LOOP: while ( /${matcher}/omg )
         {
             ( $type, $path, $file, $till ) = ( $1, $2, $3, $+[0] );
 
@@ -235,7 +252,7 @@ function diffr ()
                     ##  an indentical files report.  Look for the next
                     ##  match to find out.
 
-                    if ( /${matcher}/og )
+                    if ( /${matcher}/omg )
                     {
                         ##  Skip if an indentical files report.
                         ##
