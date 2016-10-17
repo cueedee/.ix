@@ -131,8 +131,6 @@ function diffr ()
 
         use Term::ANSIColor;
 
-        undef $/; $_ = <STDIN>;   ##  **_burp_**
-
         ##  The path arguments to the `diff` command as regexes.
         ##
         my $src     = $ARGV[-2];
@@ -158,7 +156,7 @@ function diffr ()
 
         sub highlight
         {
-            my ( $path, $diff ) = (@_);
+            my ( $path, $buf ) = (@_);
 
             ##  Reconstruct and print colorized report line, prepending
             ##  a heading new line.
@@ -173,19 +171,25 @@ function diffr ()
             ,   "\n"
             );
 
-            ##  Colorize differences.
+            ##  Output colorized differences.
             ##
-            for ( $diff )
+            for ( @$buf )
             {
-                s{ ^ [ ]{$column} [ ] \K ( [>)] (?: [ ] .* )? ) $ }{${grn}${1}${rst}}xomg;
-                s{ ^ ( .{$column} [ ]      [(<] )               $ }{${red}${1}${rst}}xomg;
-                s{ ^ ( .{$column} [ ]    [/|\\] (?: [ ] .* )? ) $ }{${cyn}${1}${rst}}xomg;
+                print, next unless ( m{ ^ ( .{$column} [ ] ) ( [(</|\\>)] ) ( (?: [ ] .* )? \n ) }xomg );
 
-                ##  Ensure the last line has a newline terminator, and
-                ##  append a trailing new line.
-                ##
-                print( $_, ( m/\n\z/ ? "\n" : "\n\n" ) );
+                my( $src, $sign, $dst ) = ( $1, $2, $3 );
+
+                for ( $sign )
+                {
+                    print(       $src, $grn, $sign,       $dst, $rst ), last if m{ [>)] }x;
+                    print( $red, $src,       $sign, $rst, $dst       ), last if m{ [(<] }x;
+                    print( $cyn, $src,       $sign,       $dst, $rst ), last if m{ [/|\\] }x;
+                }
             }
+
+            ##  Output a separating extra new line.
+            ##
+            print( "\n" );
 
             return;
         }
@@ -247,74 +251,74 @@ function diffr ()
             )
         ;
 
-        my ( $type, $path, $file, $till ) = ( "d", "", "", 0 );
+        my ( $type, $path, $file ) = ( "d", "", "" );
 
-        LOOP: while ( /${matcher}/omg )
+        my @buf;
+
+        while ( <STDIN> )
         {
-            ( $type, $path, $file, $till ) = ( $1, $2, $3, $+[0] );
+            push( @buf, $_ ), next unless ( m{ ${matcher} }xomg );
 
-            REDO: {
+            if ( "F" eq $1 && $path eq $2 )
+            {
+                ##  Diff betweeen identical files, skip.
+                ##
+                @buf = ();
+                next;
+            }
 
-                if ( "d" eq $type )
-                {
-                    ##  This is either a true report of diffs or really
-                    ##  an indentical files report.  Look for the next
-                    ##  match to find out.
+            if ( $-[0] != 0 )
+            {
+                ##  The report line did not begin at line start.
+                ##  I.e., the last line of some file omitted a trailing
+                ##  newline.
+                ##
+                push( @buf, substr( $_, 0, $-[0] ) . "\n" );
+            }
 
-                    if ( /${matcher}/omg )
-                    {
-                        ##  Skip if an indentical files report.
-                        ##
-                        next LOOP if ( "F" eq $1 && $path eq $2 );
+            if ( @buf )
+            {
+                highlight( $path, \@buf );
+                @buf = ();
+            }
 
-                        highlight( $path, substr( $_, $till, $-[0] - $till ));
+            ( $type, $path, $file ) = ( $1, $2, $3 );
 
-                        ##  Continue to process the line looked ahead
-                        ##  for.
-                        ##
-                        ( $type, $path, $file, $till ) = ( $1, $2, $3, $+[0] );
-
-                        redo REDO;
-                    }
-
-                    last LOOP;
-                }
-                elsif ( "B" eq $type )
-                {
-                    ##  Reconstruct and print colorized report line
-                    ##
-                    print(
-                        $mga,  "Binary files "
-                    ,   $red,  $src, $sto, $path
-                    ,   $mga,  " and "
-                    ,   $grn,  $dst, $sto, $path
-                    ,   $mga,  " differ"
-                    ,   $rst
-                    ,   "\n"
-                    );
-                }
-                elsif ( "O" eq $type )
-                {
-                    ##  Reconstruct and print colorized report line
-                    ##
-                    print(
-                        $blu,  "Only in "
-                    ,   $red,  $src, ": ", $sto, ( $path ? ( $path, "/" ) : () ), $file
-                    ,   $rst
-                    ,   "\n"
-                    );
-                }
-                elsif ( "y" eq $type )
-                {
-                    ##  Reconstruct and print colorized report line
-                    ##
-                    print(
-                        $blu,  "Only in "
-                    ,   $grn,  $dst, ": ", $sto, ( $path ? ( $path, "/" ) : () ), $file
-                    ,   $rst
-                    ,   "\n"
-                    );
-                }
+            if ( "B" eq $type )
+            {
+                ##  Reconstruct and print colorized report line
+                ##
+                print(
+                    $mga,  "Binary files "
+                ,   $red,  $src, $sto, $path
+                ,   $mga,  " and "
+                ,   $grn,  $dst, $sto, $path
+                ,   $mga,  " differ"
+                ,   $rst
+                ,   "\n"
+                );
+            }
+            elsif ( "O" eq $type )
+            {
+                ##  Reconstruct and print colorized report line
+                ##
+                print(
+                    $blu,  "Only in "
+                ,   $red,  $src, ": ", $sto, ( $path ? ( $path, "/" ) : () ), $file
+                ,   $rst
+                ,   "\n"
+                );
+            }
+            elsif ( "y" eq $type )
+            {
+                ##  Reconstruct and print colorized report line
+                ##
+                print(
+                    $blu,  "Only in "
+                ,   $grn,  $dst, ": ", $sto, ( $path ? ( $path, "/" ) : () ), $file
+                ,   $rst
+                ,   "\n"
+                );
             }
         }
 
@@ -322,7 +326,7 @@ function diffr ()
         ##  the `diff` command was on files instead of directories and
         ##  so no report line was ever found.
         ##
-        highlight( $path, substr( $_, $till )) if "d" eq $type;
+        highlight( $path, \@buf ) if @buf;
 
     ' -- "${opts[@]}" "${@}"
 }
