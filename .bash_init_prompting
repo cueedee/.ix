@@ -265,6 +265,19 @@ function ps_esc
 }
 
 
+##  See: https://www.gnu.org/software/bash/manual/bash.html#index-PROMPT_005fDIRTRIM
+##
+##  > If set to a number greater than zero, the value is used as the
+##  > number of trailing directory components to retain when expanding
+##  > the `\w` and `\W` prompt string escapes _\[...\]_.  Characters
+##  > removed are replaced with an ellipsis.
+##
+##  @property   $PROMP_DIRTRIM
+##  @default    3
+##
+PROMPT_DIRTRIM=3
+
+
 ##  Ensure a primary prompt that tells you where you are using color if
 ##  that appears to be supported.
 ##
@@ -296,7 +309,7 @@ function ps_esc
 ##  > `\u`            | the username of the current user
 ##  > `\v`            | the version of bash (e.g., 2.00)
 ##  > `\V`            | the release of bash, version + patch level (e.g., 2.00.0)
-##  > `\w`            | the current working directory, with `${HOME}` abbreviated with a `tilde`
+##  > `\w`            | the current working directory, with `${HOME}` abbreviated with a `tilde` (uses the value of the `${PROMPT_DIRTRIM}` variable)
 ##  > `\W`            | the basename of the current working directory, with `${HOME}` abbreviated with a `tilde`
 ##  > `\!`            | the history number of this command
 ##  > `\#`            | the command number of this command
