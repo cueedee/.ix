@@ -107,8 +107,4 @@ IX_HOME="$( self_dir )"
 
 ##  Kick-start everything else.
 ##
-source_all $( shopt -s nullglob; printf '%s ' "${IX_HOME}/.bash_init_"* )
-
-
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:
+source_all $( shopt -s nullglob; printf '%s ' "${IX_HOME}/.bash_init_"*".sh" )

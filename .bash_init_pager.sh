@@ -76,7 +76,3 @@ export PAGER='less'
 ##  @default    '-Rij5'
 ##
 export LESS='-Rij5'
-
-
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:

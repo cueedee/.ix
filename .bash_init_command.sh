@@ -46,7 +46,3 @@ function command_inject
 
     printf '%s' "${command#;}"
 }
-
-
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:

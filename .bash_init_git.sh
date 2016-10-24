@@ -307,7 +307,3 @@ if type -p __git_ps1 >&- ; then
     export GIT_PS1_HIDE_IF_PWD_IGNORED=''
 
 fi
-
-
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:

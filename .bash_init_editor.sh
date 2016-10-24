@@ -23,7 +23,3 @@ export VISUAL="${EDITOR}"
 ##
 export MYVIMRC="${IX_HOME}/.vimrc"
 export VIMINIT='source $MYVIMRC'
-
-
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:

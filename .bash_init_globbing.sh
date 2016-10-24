@@ -34,5 +34,3 @@ shopt -s extglob
 [[ "$(shopt -p)" == *globstar* ]] && shopt -s globstar
 
 
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:

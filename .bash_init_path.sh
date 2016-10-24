@@ -78,7 +78,3 @@ export PATH=$( path_mod "${PATH}"   \
     :/usr/local/bin                 \
     :"${IX_HOME}"/bin               \
 )
-
-
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:

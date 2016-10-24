@@ -176,7 +176,7 @@ $ git clone https://github.com/cueedee/.ix.git ~/.ix
 Manual invocation whenever deemed appropriate is always possible.
 
 ```bash
-$ source ~/.ix/.bash_init
+$ source ~/.ix/.bash_init.sh
 ```
 
 All initializations are idempotent.  It doesn't matter if they are invoked once or many times over.
@@ -187,14 +187,14 @@ All initializations are idempotent.  It doesn't matter if they are invoked once 
 *Either* inject this line wherever you see fit into your `~/.bash_profile`, your  `~/.bashrc`, or both:
 
 ```bash
-source ./.ix/.bash_init
+source ./.ix/.bash_init.sh
 ```
 
-*Or*, if you have no additional local initializations to perform, simply use `~/.ix/.bash_init` as a direct substitute for either your `~/.bash_profile`, your  `~/.bashrc`, or both:
+*Or*, if you have no additional local initializations to perform, simply use `~/.ix/.bash_init.sh` as a direct substitute for either your `~/.bash_profile`, your  `~/.bashrc`, or both:
 
 ```bash
-$ ln -s ./.ix/.bash_init ~/.bash_profile
-$ ln -s ./.ix/.bash_init ~/.bashrc
+$ ln -s ./.ix/.bash_init.sh ~/.bash_profile
+$ ln -s ./.ix/.bash_init.sh ~/.bashrc
 ```
 
 As [discussed above](#about-bash-initialization), it makes sense to have a single initialization file to function as both `~/.bash_profile` as well as `~/.bashrc`.
@@ -206,7 +206,7 @@ If however you think that's wasteful, you could arrange to avoid that yourself; 
   * **`~/.bash_profile`** :
 
     ```bash
-    source ~/.ix/.bash_init
+    source ~/.ix/.bash_init.sh
     ...
     __IX_DID_RUN=1 source ~/.bashrc
     ```
@@ -214,7 +214,7 @@ If however you think that's wasteful, you could arrange to avoid that yourself; 
   * **`~/.bashrc`** :
 
     ```bash
-    [[ -z "${__IX_DID_RUN:+1}" ]] && source ~/.ix/.bash_init
+    [[ -z "${__IX_DID_RUN:+1}" ]] && source ~/.ix/.bash_init.sh
     ```
 
 -----------------------------------------------------------------------

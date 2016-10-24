@@ -364,7 +364,3 @@ if type -p __git_ps1 >&-; then
 
     PROMPT_COMMAND="$(command_inject "${PROMPT_COMMAND}" '__git_ps1 "${PS1_PRE}$(ps_esc "${term_style_rst}")" "${PS1_POST}"' )"
 fi
-
-
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:

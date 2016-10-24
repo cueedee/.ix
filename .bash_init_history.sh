@@ -126,7 +126,3 @@ HISTTIMEFORMAT='[%Y-%m-%d %a %T] '
 ##  @default    "${PROMPT_COMMAND};history -a"
 ##
 PROMPT_COMMAND="$( command_inject "${PROMPT_COMMAND}" "history -a" )"
-
-
-##  -------------------------------------------------------------------
-##  vim: set filetype=sh:
