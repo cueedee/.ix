@@ -222,3 +222,4 @@ If however you think that's wasteful, you could arrange to avoid that yourself; 
 ## Further reading
 
   * `rbenv`'s comprehensive [unix shell initialization](https://github.com/rbenv/rbenv/wiki/Unix-shell-initialization) guide.
+  * [`bash` initialization process flowchart](https://twitpic.com/dld1zi).
