@@ -192,9 +192,9 @@ done
 function term_status_line
 {
     ##  If this `${TERM}` is any `xterm`, assure `tput` that it is an
-    ##  `xterm+sl` `${TERM}` so it can find those escape-sequences.
+    ##  `xterm-pcolor` `${TERM}` so it can find those escape-sequences.
     ##
-    is_xterm && printf '%s%s%s' "$(tput -Txterm+sl tsl)" "${1}" "$(tput -Txterm+sl fsl)"
+    is_xterm && printf '%s%s%s' "$(tput -Txterm-pcolor tsl)" "${1}" "$(tput -Txterm-pcolor fsl)"
 }
 
 
