@@ -203,10 +203,51 @@ function term_status_line
 ##
 ##  @method     sed_posix
 ##
+##  @return     {stdout}
+##
 if sed --posix l <<<'' &>/dev/null ; then
     alias sed_posix='sed --posix'
 else
     alias sed_posix='sed'
+fi
+
+##  An according-to-specs `sed` "visually unambiguous form" invocation.
+##
+##  The Mac OS X version of `sed` has been found to not escape the
+##  backslash character itself;
+##
+##  From `sed(1)`:
+##
+##  > (The letter ell.)  Write the pattern space to the standard
+##  > output in a visually unambiguous form.  This form is as
+##  > follows:
+##  >
+##  > ----------------- | ----
+##  > `backslash`       | `\\`
+##  > `alert`           | `\a`
+##  > `form-feed`       | `\f`
+##  > `carriage-return` | `\r`
+##  > `tab`             | `\t`
+##  > `vertical tab`    | `\v`
+##  >
+##  > Nonprintable characters are written as three-digit octal
+##  > numbers (with a preceding backslash) for each byte in the
+##  > character (most significant byte first).  Long lines are
+##  > folded, with the point of folding indicated by displaying a
+##  > backslash followed by a newline.  The end of each line is
+##  > marked with a `$`.
+##
+##  If `sed` is GNU `sed` use the POSIX compliant invocation to
+##  avoid unwanted line wrapping behaviour.
+##
+##  @method     sed_vuf
+##
+##  @return     {stdout}
+##
+if [[ $( sed -n l <<<'\' ) == '\$' ]] ; then
+    alias sed_vuf='{ sed_posix '\''s/\\/\\\\/g'\'' | sed_posix -n l; }'
+else
+    alias sed_vuf='sed_posix -n l'
 fi
 
 
@@ -221,36 +262,16 @@ fi
 ##
 function escape
 {
-    ##  From `sed(1)`:
-    ##
-    ##  > (The letter ell.)  Write the pattern space to the standard
-    ##  > output in a visually unambiguous form.  This form is as
-    ##  > follows:
-    ##  >
-    ##  > ----------------- | ----
-    ##  > `backslash`       | `\\`
-    ##  > `alert`           | `\a`
-    ##  > `form-feed`       | `\f`
-    ##  > `carriage-return` | `\r`
-    ##  > `tab`             | `\t`
-    ##  > `vertical tab`    | `\v`
-    ##  >
-    ##  > Nonprintable characters are written as three-digit octal
-    ##  > numbers (with a preceding backslash) for each byte in the
-    ##  > character (most significant byte first).  Long lines are
-    ##  > folded, with the point of folding indicated by displaying a
-    ##  > backslash followed by a newline.  The end of each line is
-    ##  > marked with a `$`.
-    ##
-    ##  If `sed` is GNU `sed` use the POSIX compliant invocation to
-    ##  avoid unwanted line wrapping behaviour.
-
-    sed_posix -n l <<<"${1}" | sed_posix 's/\$$//'
+    sed_vuf <<<"${1}" | sed_posix 's/\$$//'
 }
 
 
 ##  If non-null, output the argument, with non-printable characters
 ##  escaped, wrapped in PROMPT escape-sequence start and -end markers;
+##
+##  Ensure any backslashes already present in the input do not get
+##  escaped.
+##
 ##  Otherwise output nothing.
 ##
 ##  @method     ps_esc
@@ -261,7 +282,7 @@ function escape
 ##
 function ps_esc
 {
-    [[ -n "${1:+1}" ]] && printf '\\[%s\\]' "$(escape "${1}")"
+    [[ -n "${1:+1}" ]] && printf '\\[%s\\]' "$(escape "${1}")" | sed_posix 's/\\\\/\\/g'
 }
 
 
