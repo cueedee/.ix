@@ -178,6 +178,57 @@ alias   gg='gl --graph'
 alias  ggl='gll --graph'
 
 
+##  Find all orphaned descendants of a given commit.
+##
+##  See: http://stackoverflow.com/questions/2613935/getting-a-list-of-all-children-of-a-given-commit#24231679
+##
+##
+##  See: https://git-scm.com/docs/git-fsck
+##
+##  > * `--unreachable`
+##  >
+##  >   Print out objects that exist but that aren’t reachable from any
+##  >   of the reference nodes.
+##  >
+##  > * `--no-reflogs`
+##  >
+##  >   Do not consider commits that are referenced only by an entry in
+##  >   a reflog to be reachable. This option is meant only to search
+##  >   for commits that used to be in a ref, but now aren’t, but are
+##  >   still in that corresponding reflog.
+##
+##
+##  See: https://git-scm.com/docs/git-log
+##
+##  > * `--all`
+##  >
+##  >   Pretend as if all the refs in `refs/` are listed on the command
+##  >   line as `<commit>`.
+##  >
+##  > * `--ancestry-path`
+##  >
+##  >   When given a range of commits to display (e.g.
+##  >   `commit1..commit2` or `commit2 ^commit1`), only display commits
+##  >   that exist directly on the ancestry chain between the `commit1`
+##  >   and `commit2`, i.e. commits that are both descendants of
+##  >   `commit1`, and ancestors of `commit2`.
+##  >
+##  > * `--decorate`
+##  > * `--graph`
+##  > * `--oneline`
+##  >
+##  >   _See above_
+##
+##
+##  @method     git-orphans
+##
+##  @return     {stdout}
+##
+function git-orphans () {
+    git log --ancestry-path --graph --decorate --oneline "^${1}" --all $(git fsck --unreachable --no-reflogs | awk '$2=="commit" {print $3}')
+}
+
+
 ##  Try to provide the means for including a git repository's status
 ##  in the PS1 prompt
 ##
