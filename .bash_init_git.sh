@@ -31,6 +31,11 @@ alias   gs='git status'
 ##  >     not exist (e.g. unborn branches) and _`<commit>`_ is not
 ##  >     given, it shows all staged changes.
 ##  >
+##  >   * `--color-words[=`_`<regex>`_`]`
+##  >
+##  >     Equivalent to `--word-diff=color` plus (if a regex was
+##  >     specified) `--word-diff-regex=<regex>`.
+##  >
 ##  >   * `--word-diff[=`_`<mode>`_`]`
 ##  >
 ##  >     Show a word diff, using the _`<mode>`_ to delimit changed
@@ -64,6 +69,29 @@ alias   gs='git status'
 ##  >     Note that despite the name of the first mode, color is used
 ##  >     to highlight the changed parts in all modes if enabled.
 ##  >
+##  >   * `--word-diff-regex=`_`<regex>`_
+##  >
+##  >     Use _`<regex>`_ to decide what a word is, instead of
+##  >     considering runs of non-whitespace to be a word.  Also
+##  >     implies `--word-diff` unless it was already enabled.
+##  >
+##  >     Every non-overlapping match of the _`<regex>`_ is considered
+##  >     a word.  Anything between these matches is considered
+##  >     whitespace and ignored(!) for the purposes of finding
+##  >     differences.  You may want to append `|[^[:space:]]` to your
+##  >     regular expression to make sure that it matches all
+##  >     non-whitespace characters.  A match that contains a newline
+##  >     is silently truncated(!) at the newline.
+##  >
+##  >     For example, `--word-diff-regex=.` will treat each character
+##  >     as a word and, correspondingly, show differences character by
+##  >     character.
+##  >
+##  >     The regex can also be set via a diff driver or configuration
+##  >     option, see `gitattributes(5)` or `git-config(1)`.  Giving it
+##  >     explicitly overrides any diff driver or configuration
+##  >     setting.  Diff drivers override configuration settings.
+##  >
 ##  >   * `-M[`_`<n>`_`]`
 ##  >   * `--find-renames[=`_`<n>`_`]`
 ##  >
@@ -86,7 +114,7 @@ alias   gs='git status'
 ##  >     line has none.
 ##
 alias   gd='git diff -M'
-alias  gdw='gd --word-diff=color -w'
+alias  gdw='gd --color-words -w'
 alias  gsd='gd --staged'
 alias gsdw='gdw --staged'
 
@@ -152,7 +180,15 @@ alias gsdw='gdw --staged'
 ##  >     description of the `--diff-filter` option on what the status
 ##  >     letters mean.
 ##  >
+##  >   * `--color-words[=`_`<regex>`_`]`
+##  >
+##  >     _See same option at `git-diff` above._
+##  >
 ##  >   * `--word-diff[=`_`<mode>`_`]`
+##  >
+##  >     _See same option at `git-diff` above._
+##  >
+##  >   * `--word-diff-regex=`_`<regex>`_
 ##  >
 ##  >     _See same option at `git-diff` above._
 ##  >
@@ -161,7 +197,7 @@ alias gsdw='gdw --staged'
 ##  >
 ##  >     If generating diffs, detect and report renames for each
 ##  >     commit.  For following files across renames while traversing
-##  >     history, see --follow.
+##  >     history, see `--follow`.
 ##  >
 ##  >     _See same option at `git-diff` above._
 ##  >
@@ -172,7 +208,7 @@ alias gsdw='gdw --staged'
 ##
 alias   gl='git log --decorate --abbrev-commit --name-status -M'
 alias  gld='git log --decorate --abbrev-commit -p -M'
-alias gldw='gld --word-diff=color -w'
+alias gldw='gld --color-words -w'
 alias  gll='git log --decorate --oneline'
 alias   gg='gl --graph'
 alias  ggl='gll --graph'
