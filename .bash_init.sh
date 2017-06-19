@@ -10,7 +10,10 @@
 ##
 ##  @return     {status}    0 if this shell is a login shell.
 
-alias is_login='shopt -q login_shell'
+function is_login
+{
+    shopt -q login_shell
+}
 
 
 ##  Assess whether this is an interactive shell
@@ -19,7 +22,10 @@ alias is_login='shopt -q login_shell'
 ##
 ##  @return     {status}    0 if this shell is an interactive shell.
 
-alias is_interactive='[[ "${-}" =~ i ]]'
+function is_interactive
+{
+    [[ "${-}" =~ i ]]
+}
 
 
 ##  Output the resolved canonical absolute path to a given path.
@@ -41,14 +47,14 @@ alias is_interactive='[[ "${-}" =~ i ]]'
 ##  @return     {stdout}    The resolved canonical absolute path to the
 ##                          given `${path}`.
 ##
-hash realpath 2>/dev/null               \
+hash realpath 2>/dev/null                           \
     ||  {
-        readlink -f . 2>/dev/null       \
-    &&  alias realpath='readlink -f'    \
+        readlink -f . 2>/dev/null                   \
+    &&  function realpath { readlink -f "$@{}" ; }  \
     ||  {
-        greadlink -f . 2>/dev/null      \
-    &&  alias realpath='greadlink -f'   \
-    ||  alias realpath='python -c '\''import os,sys; print( os.path.realpath( sys.argv[ 2 if sys.argv[1] == "--" else 1 ] ))'\'
+        greadlink -f . 2>/dev/null                  \
+    &&  function realpath { greadlink -f"${@}" ; }  \
+    ||  function realpath { python -c 'import os,sys; print( os.path.realpath( sys.argv[ 2 if sys.argv[1] == "--" else 1 ] ))' "${@}" ; }
     }
 }
 
