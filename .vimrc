@@ -82,6 +82,7 @@ set fileencoding=utf-8
 ""  >     insert a `<Tab>`.  Spaces are used in indents with the `>`
 ""  >     and `<` commands and when `'autoindent'` is on.  To insert a
 ""  >     real tab when `'expandtab'` is on, use `CTRL-V<Tab>`.
+""  >
 ""  >     See also [`:retab`](http://vimdoc.sourceforge.net/htmldoc/change.html#:retab )
 ""  >     and [`ins-expandtab`](http://vimdoc.sourceforge.net/htmldoc/insert.html#ins-expandtab ).
 ""  >     **NOTE:** This option is reset when `'compatible'` is set.
@@ -89,14 +90,47 @@ set fileencoding=utf-8
 set expandtab
 
 
+""  See: http://vimdoc.sourceforge.net/htmldoc/options.html#%27hlsearch%27
+""
+""  >   * `'hlsearch'` `'hls'`
+""  >
+""  >     `boolean` (default `off`)
+""  >     global
+""  >
+""  >     When there is a previous search pattern, highlight all its
+""  >     matches.  The type of highlighting used can be set with the
+""  >     `'l'` occasion in the `'highlight'` option.  This uses the
+""  >     "Search" highlight group by default.  Note that only the
+""  >     matching text is highlighted, any offsets are not applied.
+""  >
+""  >     See also: [`'incsearch'`](http://vimdoc.sourceforge.net/htmldoc/options.html#%27incsearch%27)
+""  >     and [`:match`](http://vimdoc.sourceforge.net/htmldoc/pattern.html#:match).
+""  >     When you get bored looking at the highlighted matches, you can
+""  >     turn it off with [`:nohlsearch`](http://vimdoc.sourceforge.net/htmldoc/pattern.html#:nohlsearch).
+""  >     As soon as you use a search command, the highlighting comes
+""  >     back.
+""  >
+""  >     [`'redrawtime'`](http://vimdoc.sourceforge.net/htmldoc/options.html#%27redrawtime%27)
+""  >     specifies the maximum time spent on finding matches.
+""  >     When the search pattern can match an end-of-line, Vim will try
+""  >     to highlight all of the matched text.  However, this depends on
+""  >     where the search starts.  This will be the first line in the
+""  >     window or the first line below a closed fold.  A match in a
+""  >     previous line which is not drawn may not continue in a newly
+""  >     drawn line.
+""  >     **NOTE:** This option is reset when `'compatible'` is set.
+""
+set hlsearch
+
+
 ""  See: http://vimdoc.sourceforge.net/htmldoc/options.html#%27shiftwidth%27
 ""
 ""  >   * `'shiftwidth'` `'sw'`
 ""  >
 ""  >     `number` (default `8`)
-""  > 	  local to buffer
+""  >     local to buffer
 ""  >
-""  > 	  Number of spaces to use for each step of (auto)indent.  Used
+""  >     Number of spaces to use for each step of (auto)indent.  Used
 ""  >     for [`'cindent'`](http://vimdoc.sourceforge.net/htmldoc/options.html#%27cindent%27 ),
 ""  >     [`>>`](http://vimdoc.sourceforge.net/htmldoc/change.html#%3e%3e ),
 ""  >     [`<<`](http://vimdoc.sourceforge.net/htmldoc/change.html#%3c%3c ),
@@ -159,32 +193,32 @@ set softtabstop=4
 ""  >   * `'tabstop'` `'ts'`
 ""  >
 ""  >     `number` (default `8`)
-""  > 	  local to buffer
+""  >     local to buffer
 ""  >
-""  > 	  Number of spaces that a `<Tab>` in the file counts for.  Also
+""  >     Number of spaces that a `<Tab>` in the file counts for.  Also
 ""  >     see [`:retab`](http://vimdoc.sourceforge.net/htmldoc/change.html#:retab )
 ""  >     command, and `'softtabstop'` option.
 ""  >
-""  > 	  Note: Setting `'tabstop'` to any other value than `8` can
+""  >     Note: Setting `'tabstop'` to any other value than `8` can
 ""  >     make your file appear wrong in many places (e.g., when
 ""  >     printing it).
 ""  >
-""  > 	  There are four main ways to use tabs in Vim:
+""  >     There are four main ways to use tabs in Vim:
 ""  >
-""  > 	    1. Always keep `'tabstop'` at `8`, set `'softtabstop'` and
+""  >       1. Always keep `'tabstop'` at `8`, set `'softtabstop'` and
 ""  >          `'shiftwidth'` to `4` (or 3 or whatever you prefer) and
 ""  >          use `'noexpandtab'`.  Then Vim will use a mix of tabs
 ""  >          and spaces, but typing `<Tab>` and `<BS>` will behave
 ""  >          like a tab appears every `4` (or `3`) characters.
-""  > 	    2. Set `'tabstop'` and `'shiftwidth'` to whatever you
+""  >       2. Set `'tabstop'` and `'shiftwidth'` to whatever you
 ""  >          prefer and use `'expandtab'`.  This way you will always
 ""  >          insert spaces.  The formatting will never be messed up
 ""  >          when `'tabstop'` is changed.
-""  > 	    3. Set `'tabstop'` and `'shiftwidth'` to whatever you
+""  >       3. Set `'tabstop'` and `'shiftwidth'` to whatever you
 ""  >          prefer and use a [`modeline`](http://vimdoc.sourceforge.net/htmldoc/options.html#modeline )
 ""  >          to set these values when editing the file again.  Only
 ""  >          works when using Vim to edit the file.
-""  > 	    4. Always set `'tabstop'` and `'shiftwidth'` to the same
+""  >       4. Always set `'tabstop'` and `'shiftwidth'` to the same
 ""  >          value, and `'noexpandtab'`.  This should then work (for
 ""  >          initial indents only) for any tabstop setting that
 ""  >          people use. It might be nice to have tabs after the
