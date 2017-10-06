@@ -15,7 +15,10 @@ alias   ga='git add'
 alias   gb='git branch'
 alias   gc='git config'
 alias   gh='git help'
-alias   gs='git status'
+
+##  Show current commit AND status
+##
+alias   gs='git rev-parse HEAD 2>&- ; git status'
 
 
 ##
