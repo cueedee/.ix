@@ -23,3 +23,8 @@ export VISUAL="${EDITOR}"
 ##
 export MYVIMRC="${IX_HOME}/.vimrc"
 export VIMINIT='source $MYVIMRC'
+
+
+##  `vimdiff` shortcut
+##
+alias vd=vimdiff
